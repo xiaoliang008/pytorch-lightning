@@ -17,15 +17,15 @@ class BaseProfiler(ABC):
     """
 
     @abstractmethod
-    def start(self, action_name):
+    def start(self, action_name: str) -> None:
         """Defines how to start recording an action."""
 
     @abstractmethod
-    def stop(self, action_name):
+    def stop(self, action_name: str) -> None:
         """Defines how to record the duration once an action is complete."""
 
     @contextmanager
-    def profile(self, action_name):
+    def profile(self, action_name: str) -> None:
         """
         Yields a context manager to encapsulate the scope of a profiled action.
 
@@ -82,18 +82,23 @@ class Profiler(BaseProfiler):
     the mean duration of each action and the total time spent over the entire training run.
     """
 
-    def __init__(self):
+    def __init__(self, output_filename: str = None):
+        """
+        :param output_filename (str): optionally save profile results to file instead of printing
+            to std out when training is finished.
+        """
         self.current_actions = {}
+        self.output_filename = output_filename
         self.recorded_durations = defaultdict(list)
 
-    def start(self, action_name):
+    def start(self, action_name: str) -> None:
         if action_name in self.current_actions:
             raise ValueError(
                 f"Attempted to start {action_name} which has already started."
             )
         self.current_actions[action_name] = time.monotonic()
 
-    def stop(self, action_name):
+    def stop(self, action_name: str) -> None:
         end_time = time.monotonic()
         if action_name not in self.current_actions:
             raise ValueError(
@@ -103,7 +108,7 @@ class Profiler(BaseProfiler):
         duration = end_time - start_time
         self.recorded_durations[action_name].append(duration)
 
-    def describe(self):
+    def describe(self) -> None:
         output_string = "\n\nProfiler Report\n"
 
         def log_row(action, mean, total):
@@ -138,12 +143,12 @@ class AdvancedProfiler(BaseProfiler):
         self.output_filename = output_filename
         self.line_count_restriction = line_count_restriction
 
-    def start(self, action_name):
+    def start(self, action_name: str) -> None:
         if action_name not in self.profiled_actions:
             self.profiled_actions[action_name] = cProfile.Profile()
         self.profiled_actions[action_name].enable()
 
-    def stop(self, action_name):
+    def stop(self, action_name: str) -> None:
         pr = self.profiled_actions.get(action_name)
         if pr is None:
             raise ValueError(  # pragma: no-cover
