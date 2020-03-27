@@ -166,12 +166,12 @@ class AdvancedProfiler(BaseProfiler):
     verbose and you should only use this if you want very detailed reports.
     """
 
-    def __init__(self, output_filename=None, line_count_restriction=1.0):
+    def __init__(self, output_filename: str = None, line_count_restriction: float = 1.0):
         """
         Prams:
-            output_filename (str): optionally save profile results to file instead of printing
+            output_filename: optionally save profile results to file instead of printing
                 to std out when training is finished.
-            line_count_restriction (int|float): this can be used to limit the number of functions
+            line_count_restriction: this can be used to limit the number of functions
                 reported for each action. either an integer (to select a count of lines),
                 or a decimal fraction between 0.0 and 1.0 inclusive (to select a percentage of lines)
         """
@@ -200,16 +200,16 @@ class AdvancedProfiler(BaseProfiler):
         pr.disable()
 
     def summary(self) -> str:
-        self.recorded_stats = {}
+        recorded_stats = {}
         for action_name, pr in self.profiled_actions.items():
             s = io.StringIO()
             ps = pstats.Stats(pr, stream=s).strip_dirs().sort_stats('cumulative')
             ps.print_stats(self.line_count_restriction)
-            self.recorded_stats[action_name] = s.getvalue()
+            recorded_stats[action_name] = s.getvalue()
 
         # log to standard out
         output_string = f"{os.linesep}Profiler Report{os.linesep}"
-        for action, stats in self.recorded_stats.items():
+        for action, stats in recorded_stats.items():
             output_string += f"{os.linesep}Profile stats for: {action}{os.linesep}{stats}"
 
         return output_string

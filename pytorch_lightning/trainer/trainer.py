@@ -32,7 +32,7 @@ from pytorch_lightning.trainer.model_hooks import TrainerModelHooksMixin
 from pytorch_lightning.trainer.training_io import TrainerIOMixin
 from pytorch_lightning.trainer.training_loop import TrainerTrainLoopMixin
 from pytorch_lightning.trainer.training_tricks import TrainerTrainingTricksMixin
-from pytorch_lightning.utilities.debugging import MisconfigurationException
+from pytorch_lightning.debugging import MisconfigurationException
 
 try:
     from apex import amp
